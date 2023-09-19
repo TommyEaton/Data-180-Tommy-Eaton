@@ -9,16 +9,16 @@ library("MASS")
 
 #1.
 #SET WORKING DIRECTORY TO THE FOLDER WHERE THE DATASET IS
-setwd("D:/Dickinson College Teaching/DATA 180")
+setwd("/Users/tommyeaton/Desktop/Data 180 Tommy Eaton/Data-180-Tommy-Eaton")
 
 read_excel("particulate data.xlsx") # Always keep in mind file extensions excel = .xlsx or .xls, Comma separated value = .csv
 
 #2.
 # READ DIRECTLY FROM THE FOLDER
-p_data<-read_excel("D:/Dickinson College Teaching/DATA 180/particulate data.xlsx")
+p_data<-read_excel("/Users/tommyeaton/Desktop/Data 180 Tommy Eaton/Data-180-Tommy-Eaton/particulate data.xlsx")
 
 #3. Read CSV
-p_data_csv = read.csv("D:/Dickinson College Teaching/DATA 180/particulate data.csv")
+p_data_csv = read.csv("/Users/tommyeaton/Desktop/Data 180 Tommy Eaton/Data-180-Tommy-Eaton/particulate data.csv")
 
 # Create your own dataset.
 
