@@ -2,8 +2,8 @@
 title: "HW 2: Visualization, Base R"
 subtitle: "Data 180, Professor Kennedy"
 author: 
-  name: "XXXX"
-  email: "XXXX@dickinson.edu"
+  name: "Tommy Eaton"
+  email: "eatont@dickinson.edu"
 date: '`r format(Sys.Date(), "%B %d, %Y")`' # no need to change date since this line grabs today's date
 output: 
   html_document
@@ -37,11 +37,19 @@ head(Cars93)
 ## Task 1
 a) Create a Frequency table and Relative Frequency table (latter uses percentages) for the variable `Type`. Make sure to round all digits to 3 digits.
 ```{r}
+frequency_table <- table(Cars93$Type)
+print(frequency_table) 
+```
 
+```{r}
+relative_frequency_table <- prop.table(table(Cars93$Type)) * 100
+rounded_relative_table <- round(relative_frequency_table, 3)
+print(rounded_relative_table)
 ```
 b) Create a frequency bar graph for the variable `Type`. You can have count on the y axis.
 ```{r}
-
+frequency_table <- table(Cars93$Type)
+barplot(frequency_table, Type)
 ```
 
 *	Your axes should be labeled and legible
