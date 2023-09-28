@@ -49,7 +49,7 @@ print(rounded_relative_table)
 b) Create a frequency bar graph for the variable `Type`. You can have count on the y axis.
 ```{r}
 frequency_table <- table(Cars93$Type)
-barplot(frequency_table, Type)
+barplot(frequency_table, ylab = "Count", xlab = "Type", main = "Frequency Bar Graph for varible Type")
 ```
 
 *	Your axes should be labeled and legible
@@ -59,19 +59,20 @@ barplot(frequency_table, Type)
 
 c) Create a pie chart of the variable `Type`.
 ```{r}
-
+frequency_table <- table(Cars93$Type)
+pie(frequency_table,labels = names(frequency_table), cex = 1.2, main = "Pie Chart of the Types of Cars")
 ```
 
 * The plot should include a title using the main argument.
 *	The names, labels, and axes sizes (cex parameter) should be set to 1.2
 
 d) What is the mode of the variable `Type`? Comment.
-
+Answer: Midsized cars are the most frequent in the bar graph there for is the mode
 
 ## Task 2 
 a) Create a histogram of the variable `Horsepower`.
 ```{r}
-
+hist(Cars93$Horsepower,main = "Histogram of Horsepower of The Cars",xlab="Horsepower",border="blue", col= "red", cex=1.2, xlim=c(min(Cars93$Horsepower), max(Cars93$Horsepower)))
 ```
 
 *	Your axes should be labeled
@@ -81,40 +82,42 @@ a) Create a histogram of the variable `Horsepower`.
 
 b) Create a second histogram with breaks at 25 HP increments instead of 50.
 ```{r}
-
+hist(Cars93$Horsepower,breaks = seq(0,max(Cars93$Horsepower) + 25, by = 25), main = "Histogram of Horsepower of The Cars",xlab="Horsepower",border="blue", col= "red", cex=1.2, xlim=c(min(Cars93$Horsepower), max(Cars93$Horsepower)))
 ```
 
 * Use the breaks argument to define the classes
 * Other setting should be as in part (a)
 
 c) Which histogram more closely follows or rule of thumb for the suggested number of classes? Explain.
-```{r}
-
-```
+Answer: The second histrogram because it is more spread out and shows the distribution of the data better because in the first histogram the data is pushed together and not as spead out.
 
 
 ## Task 3 
 a) What is the type of variable `Passengers`? (Categorical nominal/ordinal or Numerical discrete/continuous?) What happens if we were to make a histogram for `Passengers`? What is the problem with this graph?
-```{r}
+Answer: The varible Passengers is a numerical discrete varible. When you create a histogram as you see below, the graph is suggesting the data is continous when it is not.
 
+```{r}
+hist(Cars93$Passengers,main = "Histogram of Passengers in The Cars",xlab="Passengers",border="blue", col= "red", cex=1.2, xlim=c(min(Cars93$Passengers), max(Cars93$Passengers)))
 ```
 
 b) Correct the problem in part (a) by creating a more appropriate visualization. Make sure to label your axes, place a title, choose a custom color as in the previous graphs. (Bonus: use factor() with levels option to display x axis values with no observations on the plot.)
 ```{r}
-
+passenger_frequency<- table(Cars93$Passengers)
+barplot(passenger_frequency, main = "Bar Chart of Passengers", xlab= "Number of Passengers", ylab="Frequency", col="lightblue", border= "black")
 ```
 
 ## Task 4 
 a) Make a histogram of the variable `Length` (the default breaks are fine). Other aspects of the plot should be as in part (a) in Task 2.
 ```{r}
-
+hist(Cars93$Length,main = "Histogram of Length of The Cars",xlab="Length",border="blue", col= "red", cex=1.2, xlim=c(min(Cars93$Length), max(Cars93$Length)))
 ```
 
 b) What is the shape of the distribution?
-
-
+Answer: Skewed to the left because most of the data is on the right and all of the smaller values are on the right
 c) Find the mean and median of the variable `Length.` Do these answers meet your expectations from part (b)?
 ```{r}
+mean(Cars93$Length)
+median(Cars93$Length)
 
 ```
 
