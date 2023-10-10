@@ -8,7 +8,7 @@ date: '`r format(Sys.Date(), "%B %d, %Y")`' # no need to change date since this 
 output: 
   html_document
 ---
-
+17/20. Good job. 
 Make sure that you have accepted the hw invitation link, and working with your clone repository.
 
 **Due date:** September 28 beginning of class.
@@ -104,6 +104,8 @@ b) Correct the problem in part (a) by creating a more appropriate visualization.
 ```{r}
 passenger_frequency<- table(Cars93$Passengers)
 barplot(passenger_frequency, main = "Bar Chart of Passengers", xlab= "Number of Passengers", ylab="Frequency", col="lightblue", border= "black")
+
+##This bar plot should show the frequency of cars that carry 1 and 3 passengers as 0 (-2)
 ```
 
 ## Task 4 
@@ -113,7 +115,7 @@ hist(Cars93$Length,main = "Histogram of Length of The Cars",xlab="Length",border
 ```
 
 b) What is the shape of the distribution?
-Answer: Skewed to the left because most of the data is on the right and all of the smaller values are on the right
+Answer: Skewed to the left because most of the data is on the right and all of the smaller values are on the right. ## The data is approximately symmetric mean ~= median.(-1)
 c) Find the mean and median of the variable `Length.` Do these answers meet your expectations from part (b)?
 ```{r}
 mean(Cars93$Length)
