@@ -31,12 +31,12 @@ Cars93_Ex7<-select(filter(Cars93, Type %in% c("Sporty","Compact") & Horsepower >
 head(Cars93_Ex7)
 
 # Mutate function.
-Cars93_Ex9<-select(mutate(Cars93,HPpLiter=Horsepower/EngineSize),Model,Type,EngineSize,Cylinders,Horsepower,MPG.highway,HPpLiter)
-
+Cars93_Ex9<-select(mutate(Cars93,HPpliter=Horsepower/EngineSize),Model,Type,EngineSize,Cylinders,Horsepower,MPG.highway,HPpLiter)
+head(Cars93_Ex9)
 
 # Equivalent pipeline
 Cars93_Ex9<-Cars93 %>%mutate(HPpLiter=Horsepower/EngineSize) %>%select(Model,Type,EngineSize,Cylinders,Horsepower,MPG.highway,HPpLiter)
-
+head(Cars93_Ex9)
 #Using the arrange function to sort your dataframe
 Cars93_Ex10<-arrange(Cars93_Ex9,Cylinders,desc(Horsepower))
 head(Cars93_Ex10)
