@@ -2,8 +2,8 @@
 title: "HW 7"
 subtitle: "Data 180, Professor Kennedy"
 author: 
-  name: "Your Name"
-  email: "XXXX@dickinson.edu"
+  name: "Tommy Eaton"
+  email: "eatont@dickinson.edu"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output: 
   html_document
@@ -33,7 +33,7 @@ Read the `news.csv` into R and create the object `news` using
 ```{r}
 #library(tidyverse)
 library(tm)
-news<-read.csv("news.csv",header=T)
+news<-read.csv("/Users/tommyeaton/Desktop/Data 180 Tommy Eaton/Data-180-Tommy-Eaton/hw7/news.csv",header=T)
 ```
 
 Read also the positive and negative word dictionaries, both found on Github. This will later come in handy:
@@ -49,18 +49,31 @@ head(negWords,15)
 # Question 1
 First, check how many years of news data we have loaded in in R.
 ```{r}
+news$year <- as.integer(format(as.Date(news$publish_date, format = "%Y%m%d"), "%Y"))
+unique_years <- unique(news$year)
+cat("Unique Years:", unique_years, "\n")
+cat("Amount of Unique Years:", length(unique_years), "\n")
 
 ```
 
 # Question 2
 Store the headlines column in a vector of text named `charVector`. Print the first 6 entries in the vector.
 ```{r}
-
+charVector <- news$headline_text
+cat("First 6 entries in charVector:\n")
+cat(charVector[1:6], "\n")
 ```
 
 # Question 3
 Convert `charVector` into a vector source object named `wordVector` using the function `VectorSource()`. (See class notes on how to do this) Then convert `wordVector` into a corpus object named `wordCorpus` using the function `Corpus()`.
 ```{r}
+wordVector <- VectorSource(charVector)
+
+wordCorpus <- Corpus(wordVector)
+
+cat("Preview of wordCorpus:\n")
+
+print(wordCorpus)
 
 ```
 
@@ -72,26 +85,42 @@ We are now ready to do some basic trimming on the text. Do the following on the 
 * Remove stopwords (e.g., the, a, at, etc.)
 
 ```{r}
+wordCorpus <- tm_map(wordCorpus, content_transformer(tolower))
+wordCorpus <- tm_map(wordCorpus, removePunctuation)
+wordCorpus <- tm_map(wordCorpus, removeNumbers)
+wordCorpus <- tm_map(wordCorpus, removeWords, stopwords("en"))
+
+cat("Text after Trimming:\n")
+cat(as.character(wordCorpus[[1]]), "\n")
 
 ```
 
 # Question 5
 What is a term document matrix? Explain. Create a term document matrix from the news vector and store it as an object named `tdm` using the function `TermDocumentMatrix`.
 ```{r}
-
+tdm <- TermDocumentMatrix(wordCorpus)
+cat("Term Document Matrix Summary:\n")
+print(tdm)
 ```
 
 # Question 6
 Convert `tdm` into a matrix named `m`. Store the frequency of occurrence of each word in the news headlines in an object named `wordCounts`. Return the top 10 most frequent words. (Note: if you run into memory issues creating the matrix `m`, try using one of the computers in Tome.)
 ```{r}
-
+matrix <- as.matrix(tdm)
+wordCount <- rowSums(matrix)
+top <- head(sort(wordCount, decreasing = TRUE), 10)
+cat("10 most Frequent words:\n")
+print(top)
 ```
 
 # Question 7
 Create a barplot of the words that showed up at least 50 times in the news headlines. Rotate the x axis labels by 90 degrees, and decrease the label font size by 25%.
 
 ```{r}
+freqWords <- rowSums(matrix) >= 50
+barplot(wordCount[freqWords], las = 2, cex.names = .75, main = "Words That Appeared at least 50 Times", col = "blue")
 
+axis(1, at = seq_along(wordCount[freqWords]), labels = names(wordCount)[freqWords], las = 2, cex.axis = .75)
 ```
 
 
@@ -99,7 +128,26 @@ Create a barplot of the words that showed up at least 50 times in the news headl
 What is the percentage of positive words in the news headlines? What is the percentage of negative words? Make a barplot for each (for positive and negative words that showed up separately) showing the most frequent words for words that showed up at least 20 times. (Note: don't forget to get the total number of unique words that showed up in the data.)
 
 ```{r}
+library(tm)
 
+calculate_and_barplot <- function(words, title) {
+  percentages <- wordCount[names(wordCount) %in% words] / sum(wordCount) * 100
+  cat(paste("Percentage of", title, "Words:", percentages, "%\n"))
+ 
+  frequent_words <- wordCount[wordCount >= 20 & names(wordCount) %in% words]
+  
+  if (length(freqwords) > 0 && all(is.finite(freqWords))) {
+    barplot(freqWords, las = 2, cex.names = .75, main = paste("Top", title, "Words(>=20)"), col = ifelse(title == "Positive", "red", "blue"))
+    axis(1, at = seq_along(freqWords), labels = names(freqWords), las = 2, cex.axis =.75)
+   
+  } else {
+    cat("No data is valid for creating the Barplot of", title, "words.\n")
+  }
+}
+calculate_and_barplot(posWords, "Positive")
+
+calculate_and_barplot(negWords, "Negative")
+  
 ```
 
 Let's get the number of articles published in each year and month. Note that the chunk below creates two new variables `count` and `yearmonth`:
@@ -112,6 +160,17 @@ news <- news %>% group_by(year,month) %>% mutate(count=n(), yearmonth = paste(ye
 Using `ggplot2`, create a barplot for the frequency of articles released in each year and month. On the x axis, you should have year month, e.g., 2003/10, 2003/11, 2003/12, 2004/1, on the y-axis you should have the number of articles released in the data. Do you see a change in the number of articles released across years? (Hint: use `factor()` with `levels=` options specified when you call `aes(x=)` to have a proper chronological sorting on your x axis. Use `+theme(axis.text=element_text(size=4,angle=90)` to fit the dates on the x axis.)
 
 ```{r}
+install.packages("ggplot2")
+library(dplyr)
+library(ggplot2)
+
+ggplot(news, aes(x = factor(yearmonth, levels = unique(yearmonth)), y = count)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(title = "Frequency of Articles Released by Year and Month",
+       x = "Year-Month",
+       y = "Number of Articles Released") +
+  theme(axis.text = element_text(size = 4, angle = 90)) +
+  scale_x_discrete(labels = function(x) gsub(" ", "\n", x))  
 ```
 
 Let's now practice working with `quanteda` and `corpus` packages. Install the packages first if you don't have them in your computer and load them in in R.
@@ -128,28 +187,48 @@ Using the `term_stats()` function, return the 20 most frequent single words that
 * stopwords
 
 ```{r}
+library(quanteda)
 
+#term_stats_result <- term_stats(text_data, stopwords = stopwords("en"))
+
+#filtered_terms <- term_stats_result[!(term_stats_result$feature %in% c(".", ",", "!", "?")), ]
+
+#top_single_words <- head(filtered_terms, 20)
+#print(top_single_words)
 ```
 
 # Question 11
 Repeat the previous question for word pairs (frequency of 2 words that show up, instead of 1 word)
 ```{r}
+#term_stats_result_bigrams <- term_stats(text_data, ngrams = 2, stopwords = stopwords("en"))
+
+#filtered_bigrams <- term_stats_result_bigrams[!(term_stats_result_bigrams$feature %in% c(".", ",", "!", "?")), ]
+
+#top_word_pairs <- head(filtered_bigrams, 20)
+#print(top_word_pairs)
 ```
 
 # Question 12
 Create a corpus object using `corpus()` function. Store it in an object named `newscorpus`. Convert `newscorpus` into paragraphs with `corpus_reshape()`.
 ```{r}
+#newscorpus <- corpus(text_data)
+#newscorpus_paragraphs <- corpus_reshape(newscorpus, to = "paragraphs")
 ```
 
 # Question 13
 Create a term document matrix named `news_dtm` by using the `dfm()` function. While you call `dfm()`, make sure to clean the paragraphs by keeping only the stems of the words, removing punctuations, removing symbols, removing numbers, and removing stopwords. If you wish to get rid of anything that does not look correct in the data (such as weird bunch of characters that show up as "words") you may trim them out at this stage using `dfm_remove()`. Finally, trim `news_dtm` such that it contains only words that show up at least 50 times. Print the first 6 rows of `news_dtm`. (Note: Again, ignore warnings.)
 ```{r}
+#news_dtm <- dfm(newscorpus_paragraphs, remove = c("punctuation", "symbols", "numbers", #stopwords("en")), stem = TRUE)
+#news_dtm <- dfm_trim(news_dtm, min_termfreq = 50)
+#print(head(news_dtm, 6))
 ```
 
 # Question 14
 Create a wordcloud of `news_dtm` using `textplot_wordcloud()`. Comment on words that you were surprised and not surprised to see in the news headlines dataset.
 ```{r}
 library("quanteda.textplots")
+#textplot_wordcloud(news_dtm)
+
 
 ```
 
@@ -166,18 +245,40 @@ Run the LDA algorithm using k = 8. Store your output in object named `topic_mode
 
 ```{r}
 
+#library(topicmodels)
+#library(tidytext)
+
+
+#dtm <- tidy(text_data) %>%
+  #cast_dtm(document = document, term = term, value = n)
+
+
+#topic_model <- LDA(dtm, k = 8)
+#terms(topic_model, 10)
 ```
 
 
 # Question 15
 Plot betas of top 10 words with highest beta for each 8 topic. Comment on 3-4 news headline groups in terms of their topic content.
 ```{r}
+#par(mfrow = c(4, 2))  #
+#for (i in 1:8) {
+  #plot(topic_model, type = "beta", topic = i, main = paste("Topic", i))
+}
 
 ```
 
 # Question 16
 Plot gammas of top 5 documents with highest gamma for each 8 topic. Return the contents of the 5 documents with highest gamma only for topics 1 and 2. Does it makes sense that these documents are assigned to topics 1 and 2 accordingly? Comment.
 ```{r}
+#par(mfrow = c(4, 2))  
+#for (i in 1:8) {
+  #plot(topic_model, type = "gamma", topic = i, main = paste("Topic", i))
+}
+
+
+#top_docs_topic1 <- top_n(as.data.frame(gamma(topic_model))$document, 5, wt = as.data.frame(gamma(topic_model))[,1])
+#top_docs_topic2 <- top_n(as.data.frame(gamma(topic_model))$document, 5, wt = as.data.frame(gamma(topic_model))[,2])
 
 ```
 
