@@ -1,0 +1,188 @@
+---
+title: "Final_Exam_Tommy_Eaton"
+author: "Tommy Eaton"
+output: html_document
+date: "2023-12-08"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+#Inserting the Csv Data Set
+```{r}
+data <- read.csv("/Users/tommyeaton/Desktop/Data 180 Tommy Eaton/Data-180-Tommy-Eaton/loan_default_data_set.csv")
+```
+
+#1a.What is the dimension (shape) of the dataset?  How many rows and columns does the data set have? 
+There are 20,000 rows and 21 columns
+```{r}
+dimensions <- dim(data)
+
+cat("Number of rows", dimensions[1],"\n")
+cat("Number of columns", dimensions[2],"\n")
+
+```
+
+#1b. Report the column names of the data set. 
+The Column Names are tot_balance, avg_bal_cards, credit_age, credit_age_good_account, credit_card_age, num_acc_30d_past_due_12_months, num_acc_30d_past_due_6_months, num_mortgage_currently_past_due, tot_amount_currently_past_due, num_inq_12_month, num_card_inq_24_month, num_card_12_month, num_auto_.36_month, uti_open_card, pct_over_50_uti, uti_max_credit_line, pct_card_over_50_uti, ind_XYZ, rep_income, rep_education, Def_ind 
+```{r}
+column_names <- colnames(data)
+
+cat("Column Names are", paste(column_names, collapse = ", "), "\n")
+
+```
+#1c. Which types of data are there in the dataset? Numeric, categorical, ordinal?
+The types of data in the data set are Numerical and ordinal.
+
+#1d. Which columns contain missing values and how much (what percent) of those columns are missing? 
+The columns missing values are pct_card_over_50_uti and rep_income. The missing percent of pct_card_over_50_uti is 9.790% and the missing poercent for rep_income is 7.795%.
+```{r}
+miss_col <- colnames(data)[colSums(is.na(data)) > 0]
+
+miss_summary <- data.frame(
+  Column = miss_col,
+  Miss_Values = colSums(is.na(data[, miss_col])),
+  Percent_Missing = colSums(is.na(data[, miss_col])) / nrow(data) * 100
+)
+
+print(miss_summary)
+
+
+```
+
+
+
+#1e.How do you think we should deal with missing values?  
+We should remove the columns with the missing values because if it is a certain number of missing values that are not valuable to my analysis, then you can remove them.
+
+#1f.With this data, would you fit a supervised or an unsupervised learning model? Why?  
+We should use supervised learning because in supervised learning, the goal is to predict or classify the outcome variable based off of the input. In the dataset given, there is a Binary response variable that shows the approval or denial of credit, which is the outcome varible that we want to predict.
+#1g.For part 2 and 3 drop all rows of the data that contain missing values. Print the dimensions of the resulting data set that has no missing values. 
+```{r}
+data_no_missing <- na.omit(data)
+
+cat("Dimensions of the data set with no missing values:\n")
+print(dim(data_no_missing))
+
+```
+
+#2a.Find the summary statistics of the data set. You can use the summary function from dplyr.  
+```{r}
+install.packages("dplyr")
+library(dplyr)
+
+summary_stats <- data_no_missing %>%
+  summary()
+
+print(summary_stats)
+
+
+```
+
+#2b. Based on the mean, mode, and median, is “num_card_inq_24_month” bell shaped, left, right skewed? How about “tot_amount_currently_past_due”? “credit_age”?  
+num_card_inq_24_month is right skewed because the mean is greater than the median. tot_amount_currently_past_due is also right skewed because the mean is greater than the median. credit_age is left skewed because the median is greater than the mean.
+
+
+#2c.Plot a histogram of the variables in b above. Do the shapes of the histograms confirm the skewness you found in b? 
+Yes both tot_amount_currently_past_due and num_card_inq_24_month are right skewed and credit_age is left skewed just not as visable as the other two histograms.
+```{r}
+par(mfrow = c(1, 3)) 
+
+hist(data_no_missing$num_card_inq_24_month, main = "num_card_inq_24_month", xlab = "Value")
+
+hist(data_no_missing$tot_amount_currently_past_due, main = "tot_amount_currently_past_due", xlab = "Value")
+
+hist(data_no_missing$credit_age, main = "credit_age", xlab = "Value")
+
+```
+
+
+#2d.How would your convert the “rep_education” column into numerical data? Name two ways. 
+You can either assign a unique integer to each category in the column using the 'as.numeric()' function or 'factor()' function. Another way is by creating binary columns for each category and if its present then it is givin the value of 1, if it is not present then it is giving a value of 0. You use 'model.matrix()' function or 'dummy_cols()' function from 'dplyr' package to achieve that.
+
+
+#3a.Plot a bar graph for the “Def_Ind” column and describe it
+This Bar Graph shows the amout of rows that has the value of one or zero for the column 'Def_ind'.
+
+```{r}
+install.packages("ggplot2")
+library(ggplot2)
+
+data_no_missing$Def_ind <- as.factor(data_no_missing$Def_ind)
+
+ggplot(data_no_missing, aes(x = Def_ind, fill = Def_ind, group = Def_ind)) +
+  geom_bar() +  
+  ggtitle("Bar Graph - Def_ind") + 
+  xlab("Def_ind") + 
+  ylab("Frequency") + 
+  scale_fill_manual(values = c("red", "orange")) + 
+  theme_minimal()
+
+
+```
+
+#3b.Plot a bar graph for the “rep_education" column and describe it.  
+This Bar Graph shows each Level of education and the frequency of each type of education.
+
+```{r}
+ggplot(data_no_missing, aes(x = rep_education, fill = rep_education)) +
+  geom_bar() +
+  ggtitle("Bar Graph of the Column rep_education") +
+  xlab("Education Level") +
+  ylab("Frequency") +
+  scale_fill_manual(values = c("black", "navy", "green", "red")) +
+  theme_minimal()
+```
+
+#3c.Plot a histogram of the “rep_income” variable. 
+
+```{r}
+library(ggplot2)
+
+ggplot(data_no_missing, aes(x = rep_income)) +
+  geom_histogram(binwidth = 500, fill = "yellow", color = "red", alpha = 0.7) +
+  labs(title = "Histogram of the Variable rep_income",
+       x = "rep_income",
+       y = "Frequency") +
+  theme_minimal()
+
+```
+
+#3d.Plot a boxplot of the “tot_balance” variable. Using the box plot report the five number summary of the variable? Are there any outliers for this variable?
+The min is 0, The first quartile is 92142, The median is 107740, The 3rd Quartile is 122932, and the max is 200000. Yes there are outliers because there are individual points that are outside the whiskers of the boxplot.
+```{r}
+library(ggplot2)
+
+ggplot(data_no_missing, aes(x = "", y = tot_balance)) +
+  geom_boxplot(fill = "yellow", color = "navy", alpha = 0.7) +
+  labs(title = "Boxplot of tot_balance",
+       x = "",
+       y = "Total Balance") +
+  theme_minimal()
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
