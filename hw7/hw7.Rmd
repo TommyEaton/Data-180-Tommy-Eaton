@@ -10,7 +10,7 @@ output:
 editor_options: 
   chunk_output_type: console
 ---
-
+18/20. Good job. 
 **Due date:** December 4 beginning of class.
 
 
@@ -33,7 +33,7 @@ Read the `news.csv` into R and create the object `news` using
 ```{r}
 #library(tidyverse)
 library(tm)
-news<-read.csv("/Users/tommyeaton/Desktop/Data 180 Tommy Eaton/Data-180-Tommy-Eaton/hw7/news.csv",header=T)
+news<-read.csv("D:/Dickinson College Teaching/DATA 180/hw7/news.csv",header=T)
 ```
 
 Read also the positive and negative word dictionaries, both found on Github. This will later come in handy:
@@ -49,11 +49,13 @@ head(negWords,15)
 # Question 1
 First, check how many years of news data we have loaded in in R.
 ```{r}
-news$year <- as.integer(format(as.Date(news$publish_date, format = "%Y%m%d"), "%Y"))
+#news$year <- as.integer(format(as.Date(news$publish_date, format = "%Y%m%d"), "%Y"))
 unique_years <- unique(news$year)
 cat("Unique Years:", unique_years, "\n")
 cat("Amount of Unique Years:", length(unique_years), "\n")
 
+## You cannot assign variable as an attribute. 
+## Code breaking. 
 ```
 
 # Question 2
